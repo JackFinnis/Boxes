@@ -29,24 +29,34 @@ struct GameView: View {
                 }
                 Spacer()
                 
-                ColorPicker("Shape Colour", selection: $game.colour)
-                    .labelsHidden()
-                
                 Menu {
-                    Picker("", selection: $game.shapeType) {
-                        ForEach(ShapeType.allCases, id: \.self) { shape in
-                            Label(shape.rawValue.capitalized, systemImage: shape.rawValue)
+                    Picker("", selection: $game.shapeColour) {
+                        ForEach(ShapeColour.allCases, id: \.self) { colour in
+                            Label {
+                                Text(colour.rawValue.capitalized)
+                            } icon: {
+                                colour.icon
+                            }
                         }
                     }
                 } label: {
-                    Image(systemName: game.shapeType.rawValue)
+                    Image(systemName: "circle.fill")
+                        .foregroundColor(game.shapeColour.colour)
+                }
+                Menu {
+                    Picker("", selection: $game.shapeType) {
+                        ForEach(ShapeType.allCases, id: \.self) { shape in
+                            Label(shape.rawValue.capitalized, systemImage: shape == .random ? "questionmark" : shape.systemName)
+                        }
+                    }
+                } label: {
+                    Image(systemName: game.shapeType.systemName)
                         .animation(.none)
                 }
-                
                 Menu {
                     Picker("", selection: $game.shapeSize) {
                         ForEach(ShapeSize.allCases, id: \.self) { size in
-                            Label(size.name, systemImage: size.systemName)
+                            Label(size.rawValue.capitalized, systemImage: size == .random ? "questionmark" : size.systemName)
                         }
                     }
                 } label: {
@@ -54,6 +64,7 @@ struct GameView: View {
                         .animation(.none)
                 }
                 
+                Spacer()
                 Menu {
                     Picker("", selection: $game.gravity) {
                         ForEach(Gravity.allCases, id: \.self) { planet in
@@ -64,8 +75,6 @@ struct GameView: View {
                     Image(systemName: game.gravity.systemName)
                         .animation(.none)
                 }
-                
-                Spacer()
                 Button {
                     game.reset()
                 } label: {
@@ -87,8 +96,45 @@ struct GameView: View {
     }
 }
 
+enum ShapeColour: String, CaseIterable {
+    case red, green, yellow, blue
+    case random
+    
+    var icon: Image {
+        if self == .random {
+            return Image(systemName: "questionmark")
+        } else {
+            return Image(uiImage: UIImage(systemName: "circle.fill", withConfiguration: UIImage.SymbolConfiguration(hierarchicalColor: UIColor(colour)))!)
+        }
+    }
+    
+    var colour: Color {
+        switch self {
+        case .red:
+            return Color.red
+        case .green:
+            return Color.green
+        case .yellow:
+            return Color.yellow
+        case .blue:
+            return Color.blue
+        case .random:
+            return [ShapeColour.red, .green, .yellow, .blue].randomElement()!.colour
+        }
+    }
+}
+
 enum ShapeType: String, CaseIterable {
     case square, circle, triangle
+    case random
+    
+    var systemName: String {
+        if self == .random {
+            return [ShapeType.square, .circle, .triangle].randomElement()!.systemName
+        } else {
+            return rawValue
+        }
+    }
     
     func node(size: Double) -> SKShapeNode {
         let node: SKShapeNode
@@ -107,15 +153,18 @@ enum ShapeType: String, CaseIterable {
             path.addLine(to: CGPoint(x: 0, y: 0))
             node = SKShapeNode(path: path.cgPath)
             node.physicsBody = SKPhysicsBody(polygonFrom: path.cgPath)
+        case .random:
+            node = [ShapeType.square, .circle, .triangle].randomElement()!.node(size: size)
         }
         return node
     }
 }
 
-enum ShapeSize: Double, CaseIterable {
-    case small = 25
-    case medium = 50
-    case large = 75
+enum ShapeSize: String, CaseIterable {
+    case small
+    case medium
+    case large
+    case random
     
     var systemName: String {
         switch self {
@@ -125,17 +174,21 @@ enum ShapeSize: Double, CaseIterable {
             return "circle.grid.2x2"
         case .large:
             return "circle.grid.2x1"
+        case .random:
+            return [ShapeSize.small, .medium, .large].randomElement()!.systemName
         }
     }
     
-    var name: String {
+    var size: Double {
         switch self {
         case .small:
-            return "Small"
+            return 25
         case .medium:
-            return "Medium"
+            return 50
         case .large:
-            return "Large"
+            return 75
+        case .random:
+            return [ShapeSize.small, .medium, .large].randomElement()!.size
         }
     }
 }
@@ -169,9 +222,10 @@ enum Gravity: Double, CaseIterable {
 }
 
 class Game: SKScene, ObservableObject {
-    @Published var colour = Color.red
+    @Published var shapeColour = ShapeColour.red
     @Published var shapeType = ShapeType.square
     @Published var shapeSize = ShapeSize.medium
+    
     @Published var gravity = Gravity.earth
     
     let motion = CMMotionManager()
@@ -195,8 +249,8 @@ class Game: SKScene, ObservableObject {
     
     func addShape(at location: CGPoint? = nil) {
         let location = location ?? CGPointMake(frame.width / 2, frame.height / 2)
-        let shape = shapeType.node(size: shapeSize.rawValue)
-        shape.fillColor = UIColor(colour)
+        let shape = shapeType.node(size: shapeSize.size)
+        shape.fillColor = UIColor(shapeColour.colour)
         shape.position = location
         addChild(shape)
     }
@@ -214,6 +268,7 @@ class Game: SKScene, ObservableObject {
             }
         } else {
             addShape(at: location)
+            objectWillChange.send()
         }
     }
     
