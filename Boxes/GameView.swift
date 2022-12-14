@@ -23,9 +23,9 @@ struct GameView: View {
             }
             HStack(spacing: 20) {
                 Button {
-                    game.addShape()
+                    game.reset()
                 } label: {
-                    Image(systemName: "plus")
+                    Image(systemName: "arrow.counterclockwise")
                 }
                 Spacer()
                 
@@ -76,9 +76,9 @@ struct GameView: View {
                         .animation(.none)
                 }
                 Button {
-                    game.reset()
+                    game.addShape()
                 } label: {
-                    Image(systemName: "arrow.counterclockwise")
+                    Image(systemName: "plus")
                 }
             }
             .font(.title)
@@ -156,6 +156,7 @@ enum ShapeType: String, CaseIterable {
         case .random:
             node = [ShapeType.square, .circle, .triangle].randomElement()!.node(size: size)
         }
+        node.lineWidth = 0
         return node
     }
 }
@@ -253,6 +254,7 @@ class Game: SKScene, ObservableObject {
         shape.fillColor = UIColor(shapeColour.colour)
         shape.position = location
         addChild(shape)
+        objectWillChange.send()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -268,7 +270,6 @@ class Game: SKScene, ObservableObject {
             }
         } else {
             addShape(at: location)
-            objectWillChange.send()
         }
     }
     
