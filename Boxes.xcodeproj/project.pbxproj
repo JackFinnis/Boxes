@@ -8,17 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		04D0B5A929494A79000CCCD8 /* BoxesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D0B5A829494A79000CCCD8 /* BoxesApp.swift */; };
-		04D0B5AB29494A79000CCCD8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D0B5AA29494A79000CCCD8 /* ContentView.swift */; };
 		04D0B5AD29494A7A000CCCD8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04D0B5AC29494A7A000CCCD8 /* Assets.xcassets */; };
-		04D0B5B029494A7A000CCCD8 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04D0B5AF29494A7A000CCCD8 /* Preview Assets.xcassets */; };
+		04D0B5B729494AA7000CCCD8 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D0B5B629494AA7000CCCD8 /* GameView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		04D0B5A529494A79000CCCD8 /* Boxes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Boxes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		04D0B5A829494A79000CCCD8 /* BoxesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxesApp.swift; sourceTree = "<group>"; };
-		04D0B5AA29494A79000CCCD8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		04D0B5AC29494A7A000CCCD8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		04D0B5AF29494A7A000CCCD8 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		04D0B5B629494AA7000CCCD8 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,19 +50,10 @@
 			isa = PBXGroup;
 			children = (
 				04D0B5A829494A79000CCCD8 /* BoxesApp.swift */,
-				04D0B5AA29494A79000CCCD8 /* ContentView.swift */,
+				04D0B5B629494AA7000CCCD8 /* GameView.swift */,
 				04D0B5AC29494A7A000CCCD8 /* Assets.xcassets */,
-				04D0B5AE29494A7A000CCCD8 /* Preview Content */,
 			);
 			path = Boxes;
-			sourceTree = "<group>";
-		};
-		04D0B5AE29494A7A000CCCD8 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				04D0B5AF29494A7A000CCCD8 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -125,7 +114,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				04D0B5B029494A7A000CCCD8 /* Preview Assets.xcassets in Resources */,
 				04D0B5AD29494A7A000CCCD8 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -137,7 +125,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				04D0B5AB29494A79000CCCD8 /* ContentView.swift in Sources */,
+				04D0B5B729494AA7000CCCD8 /* GameView.swift in Sources */,
 				04D0B5A929494A79000CCCD8 /* BoxesApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -266,15 +254,16 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Boxes/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 4CQW4CFFYT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -295,15 +284,16 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Boxes/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 4CQW4CFFYT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
