@@ -27,6 +27,7 @@ struct GameView: View {
                 } label: {
                     Image(systemName: "plus")
                 }
+                Spacer()
                 
                 ColorPicker("Shape Colour", selection: $game.colour)
                     .labelsHidden()
@@ -64,6 +65,7 @@ struct GameView: View {
                         .animation(.none)
                 }
                 
+                Spacer()
                 Button {
                     game.reset()
                 } label: {
@@ -72,6 +74,7 @@ struct GameView: View {
             }
             .font(.title)
             .frame(height: 50)
+            .padding(.horizontal)
         }
         .onReceive(NotificationCenter.default.publisher(for: .didShakeDevice)) { _ in
             showShakeAlert = true
