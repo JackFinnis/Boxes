@@ -9,53 +9,193 @@ import SwiftUI
 import SpriteKit
 import CoreMotion
 
-struct RootView: View {
+struct GameView: View {
+    @StateObject var game = Game()
     @State var showShakeAlert = false
-    @State var refresh = false
-    
-    let game = Game()
     
     var body: some View {
-        GeometryReader { geo in
-            SpriteView(scene: game, options: [.allowsTransparency])
-                .onAppear {
-                    game.size = geo.size
+        VStack(spacing: 0) {
+            GeometryReader { geo in
+                SpriteView(scene: game, options: [.allowsTransparency])
+                    .onAppear {
+                        game.size = geo.size
+                    }
+            }
+            HStack(spacing: 20) {
+                Button {
+                    game.addShape()
+                } label: {
+                    Image(systemName: "plus")
                 }
+                
+                ColorPicker("Shape Colour", selection: $game.colour)
+                    .labelsHidden()
+                
+                Menu {
+                    Picker("", selection: $game.shapeType) {
+                        ForEach(ShapeType.allCases, id: \.self) { shape in
+                            Label(shape.rawValue.capitalized, systemImage: shape.rawValue)
+                        }
+                    }
+                } label: {
+                    Image(systemName: game.shapeType.rawValue)
+                        .animation(.none)
+                }
+                
+                Menu {
+                    Picker("", selection: $game.shapeSize) {
+                        ForEach(ShapeSize.allCases, id: \.self) { size in
+                            Label(size.name, systemImage: size.systemName)
+                        }
+                    }
+                } label: {
+                    Image(systemName: game.shapeSize.systemName)
+                        .animation(.none)
+                }
+                
+                Menu {
+                    Picker("", selection: $game.gravity) {
+                        ForEach(Gravity.allCases, id: \.self) { planet in
+                            Label(planet.name, systemImage: planet.systemName)
+                        }
+                    }
+                } label: {
+                    Image(systemName: game.gravity.systemName)
+                        .animation(.none)
+                }
+                
+                Button {
+                    game.reset()
+                } label: {
+                    Image(systemName: "arrow.counterclockwise")
+                }
+            }
+            .font(.title)
+            .frame(height: 50)
         }
         .onReceive(NotificationCenter.default.publisher(for: .didShakeDevice)) { _ in
             showShakeAlert = true
+            Haptics.error()
         }
         .alert("Reset Canvas?", isPresented: $showShakeAlert) {
             Button("Cancel", role: .cancel) {}
-            Button("Reset") {
-                game.removeAllChildren()
-                game.addBox()
-                Haptics.tap()
-            }
+            Button("Reset", action: game.reset)
         }
     }
 }
 
-class Game: SKScene {
+enum ShapeType: String, CaseIterable {
+    case square, circle, triangle
+    
+    func node(size: Double) -> SKShapeNode {
+        let node: SKShapeNode
+        switch self {
+        case .square:
+            node = SKShapeNode(rectOf: CGSizeMake(size, size))
+            node.physicsBody = SKPhysicsBody(rectangleOf: node.frame.size)
+        case .circle:
+            node = SKShapeNode(circleOfRadius: size/2)
+            node.physicsBody = SKPhysicsBody(circleOfRadius: size/2)
+        case .triangle:
+            let path = UIBezierPath()
+            path.move(to: CGPoint(x: 0, y: 0))
+            path.addLine(to: CGPoint(x: size/2, y: size * sqrt(3) / 2))
+            path.addLine(to: CGPoint(x: size, y: 0))
+            path.addLine(to: CGPoint(x: 0, y: 0))
+            node = SKShapeNode(path: path.cgPath)
+            node.physicsBody = SKPhysicsBody(polygonFrom: path.cgPath)
+        }
+        return node
+    }
+}
+
+enum ShapeSize: Double, CaseIterable {
+    case small = 25
+    case medium = 50
+    case large = 75
+    
+    var systemName: String {
+        switch self {
+        case .small:
+            return "circle.grid.3x3"
+        case .medium:
+            return "circle.grid.2x2"
+        case .large:
+            return "circle.grid.2x1"
+        }
+    }
+    
+    var name: String {
+        switch self {
+        case .small:
+            return "Small"
+        case .medium:
+            return "Medium"
+        case .large:
+            return "Large"
+        }
+    }
+}
+
+enum Gravity: Double, CaseIterable {
+    case sun = 100
+    case earth = 50
+    case moon = 10
+    
+    var systemName: String {
+        switch self {
+        case .earth:
+            return "globe.europe.africa"
+        case .sun:
+            return "sun.max"
+        case .moon:
+            return "moon"
+        }
+    }
+    
+    var name: String {
+        switch self {
+        case .earth:
+            return "Earth"
+        case .sun:
+            return "Sun"
+        case .moon:
+            return "Moon"
+        }
+    }
+}
+
+class Game: SKScene, ObservableObject {
+    @Published var colour = Color.red
+    @Published var shapeType = ShapeType.square
+    @Published var shapeSize = ShapeSize.medium
+    @Published var gravity = Gravity.earth
+    
     let motion = CMMotionManager()
     
     var boxMoving: SKNode?
     var touchPoint: CGPoint?
+    
+    func reset() {
+        removeAllChildren()
+        addShape()
+        Haptics.tap()
+    }
     
     override func didMove(to view: SKView) {
         physicsBody = SKPhysicsBody(edgeLoopFrom: frame)
         backgroundColor = .clear
         motion.deviceMotionUpdateInterval = 1/60
         motion.startAccelerometerUpdates()
-        addBox()
+        addShape()
     }
     
-    func addBox(at location: CGPoint? = nil) {
+    func addShape(at location: CGPoint? = nil) {
         let location = location ?? CGPointMake(frame.width / 2, frame.height / 2)
-        let box = SKSpriteNode(color: .red, size: CGSize(width: 50, height: 50))
-        box.physicsBody = SKPhysicsBody(rectangleOf: box.size)
-        box.position = location
-        addChild(box)
+        let shape = shapeType.node(size: shapeSize.rawValue)
+        shape.fillColor = UIColor(colour)
+        shape.position = location
+        addChild(shape)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -70,7 +210,7 @@ class Game: SKScene {
                 box.removeFromParent()
             }
         } else {
-            addBox(at: location)
+            addShape(at: location)
         }
     }
     
@@ -93,14 +233,8 @@ class Game: SKScene {
         }
         
         if let data = motion.accelerometerData {
-            physicsWorld.gravity = CGVector(dx: data.acceleration.x * 50, dy: data.acceleration.y * 50)
+            physicsWorld.gravity = CGVector(dx: data.acceleration.x * gravity.rawValue, dy: data.acceleration.y * gravity.rawValue)
         }
-    }
-}
-
-extension CGVector {
-    public init(magnitude: Double, angle: Double) {
-        self.init(dx: magnitude * cos(angle), dy: magnitude * sin(angle))
     }
 }
 

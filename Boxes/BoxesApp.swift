@@ -11,7 +11,7 @@ import SwiftUI
 struct BoxesApp: App {
     var body: some Scene {
         WindowGroup {
-            RootView()
+            GameView()
         }
     }
 }
